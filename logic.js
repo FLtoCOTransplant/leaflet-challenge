@@ -57,3 +57,55 @@ var baseMaps = {
   "Grayscale": lightMap,
   "Outdoors": outdoorsMap
 };
+
+// Store API endpoint as queryUrl
+var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+
+var platesPath = "GeoJSON/PB2002_boundaries.json";
+
+// Perform a GET request to the query URL
+d3.json(queryUrl, function(data) {
+    d3.json(platesPath, function(platesData) {
+
+        // Earthquake layer
+        var earthquakes = L.geoJSON(data, {
+
+        // Create circle markers
+        pointToLayer: function (feature, latlng) {
+          var geojsonMarkerOptions = {
+            radius: 8,
+            stroke: false,
+            //fillColor: "#ff7800",
+            radius: markerSize(feature),
+            fillColor: fillColor(feature),
+            //color: "white",
+            weight: 5,
+            opacity: .8,
+            fillOpacity: .8
+          };
+          return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
+  
+        // Create popups
+        onEachFeature: function (feature, layer) {
+          return layer.bindPopup(`<strong>Place:</strong> ${feature.properties.place}<br><strong>Magnitude:</strong> ${feature.properties.mag}`);
+        }
+    });
+
+          // Tectonic plates layer
+        var platesStyle = {
+            "color": "white",
+            "weight": 2,
+            "opacity": 1,
+            fillOpacity: 0,
+        };
+        
+        var plates = L.geoJSON(platesData, {
+            style: platesStyle
+        });
+  
+        // Create an overlay object
+        var overlayMaps = {
+            "Fault lines": plates,
+            "Earthquakes": earthquakes,
+        };
