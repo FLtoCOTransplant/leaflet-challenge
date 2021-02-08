@@ -27,4 +27,33 @@ function markerSize(feature) {
     }
   }
 
-  
+  // Base layers for maps (no data yet)
+var attribution = "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>";
+
+var satelliteMap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: attribution,
+  maxZoom: 18,
+  id: "mapbox.satellite",
+  accessToken: API_KEY
+});
+
+var lightMap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: attribution,
+  maxZoom: 18,
+  id: "mapbox.light",
+  accessToken: API_KEY
+});
+
+var outdoorsMap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: attribution,
+  maxZoom: 18,
+  id: "mapbox.outdoors",
+  accessToken: API_KEY
+});
+
+// Create a baseMaps object
+var baseMaps = {
+  "Satellite": satelliteMap,
+  "Grayscale": lightMap,
+  "Outdoors": outdoorsMap
+};
