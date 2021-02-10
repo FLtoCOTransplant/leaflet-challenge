@@ -65,47 +65,91 @@ var platesPath = "GeoJSON/PB2002_boundaries.json";
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
-    d3.json(platesPath, function(platesData) {
+  d3.json(platesPath, function(platesData) {
 
-        // Earthquake layer
-        var earthquakes = L.geoJSON(data, {
+    // Earthquake layer
+    var earthquakes = L.geoJSON(data, {
 
-        // Create circle markers
+      // Create circle markers
         pointToLayer: function (feature, latlng) {
           var geojsonMarkerOptions = {
-            radius: 8,
-            stroke: false,
-            //fillColor: "#ff7800",
-            radius: markerSize(feature),
-            fillColor: fillColor(feature),
-            //color: "white",
-            weight: 5,
-            opacity: .8,
-            fillOpacity: .8
+          radius: 8,
+          stroke: false,
+          //fillColor: "#ff7800",
+          radius: markerSize(feature),
+          fillColor: fillColor(feature),
+          //color: "white",
+          weight: 5,
+          opacity: .8,
+          fillOpacity: .8
           };
+          
           return L.circleMarker(latlng, geojsonMarkerOptions);
         },
   
         // Create popups
-        onEachFeature: function (feature, layer) {
-          return layer.bindPopup(`<strong>Place:</strong> ${feature.properties.place}<br><strong>Magnitude:</strong> ${feature.properties.mag}`);
+        onEachFeature: function (feature, layer) {  
+        return layer.bindPopup(`<strong>Place:</strong> ${feature.properties.place}<br><strong>Magnitude:</strong> ${feature.properties.mag}`);
         }
     });
 
-          // Tectonic plates layer
-        var platesStyle = {
-            "color": "white",
-            "weight": 2,
-            "opacity": 1,
-            fillOpacity: 0,
-        };
+    // Tectonic plates layer
+      var platesStyle = {
+          "color": "white",
+          "weight": 2,
+          "opacity": 1,
+          fillOpacity: 0,
+      };
         
-        var plates = L.geoJSON(platesData, {
-            style: platesStyle
-        });
+      var plates = L.geoJSON(platesData, {
+          style: platesStyle
+      });
   
-        // Create an overlay object
-        var overlayMaps = {
-            "Fault lines": plates,
-            "Earthquakes": earthquakes,
+      // Create an overlay object
+      var overlayMaps = {
+          "Fault lines": plates,
+          "Earthquakes": earthquakes,
+      };
+
+      // Define a map object
+      var map = L.map("map", {
+          center: [37.09, -95.71],
+          zoom: 3,
+          layers: [satelliteMap, plates, earthquakes]
+      });
+  
+      // Add the layer control to the map
+      L.control.layers(baseMaps, overlayMaps, {
+        collapsed: false
+      }).addTo(map);
+  
+      // Setting up the legend
+      var legend = L.control({ position: "bottomright" });
+        legend.onAdd = function() {
+          var div = L.DomUtil.create("div", "info legend");
+          var limits = ["0-1", "1-2", "2-3", "3-4", "4-5", "5+"];
+          var labelsColor = [];
+          var labelsText = [];
+  
+          // Add min & max
+          limits.forEach(function(limit, index) {
+            labelsColor.push(`<li style="background-color: ${colors[index]};"></li>`); // <span class="legend-label">${limits[index]}</span>
+            labelsText.push(`<span class="legend-label">${limits[index]}</span>`)
+          });
+  
+          var labelsColorHtml =  "<ul>" + labelsColor.join("") + "</ul>";
+          var labelsTextHtml = `<div id="labels-text">${labelsText.join("<br>")}</div>`;
+  
+          var legendInfo = "<h4>Earthquake<br>Magnitude</h4>" +
+            "<div class=\"labels\">" + labelsColorHtml + labelsTextHtml
+            "</div>";
+          div.innerHTML = legendInfo;
+  
+          return div;
         };
+  
+      // Adding legend to the map
+      legend.addTo(map);
+  
+  })
+})
