@@ -133,7 +133,7 @@ d3.json(queryUrl, function(data) {
   
           // Add min & max
           limits.forEach(function(limit, index) {
-            labelsColor.push(`<li style="background-color: ${colors[index]};"></li>`); // <span class="legend-label">${limits[index]}</span>
+            labelsColor.push(`<li style="background-color: ${colors[index]};"></li>`);
             labelsText.push(`<span class="legend-label">${limits[index]}</span>`)
           });
   

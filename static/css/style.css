@@ -28,10 +28,9 @@ html {
   margin: 0;
   width: 40px;
   position: absolute;
-  /* clear: both; */
+  
 }
 .legend li {
-  /* display: inline-block; */
   width: 30px;
   height: 22px;
 }
